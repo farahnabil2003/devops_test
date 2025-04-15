@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-activity-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: user-activity-service
+  template:
+    metadata:
+      labels:
+        app: user-activity-service
+    spec:
+      containers:
+      - name: user-activity-service
+        image: your-registry/user-activity-service:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: KAFKA_BROKERS
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: kafka.brokers
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: mongodb.uri
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-activity-service
+spec:
+  selector:
+    app: user-activity-service
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: LoadBalancer 

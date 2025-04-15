@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  kafka.brokers: "kafka-service:9092"
+  mongodb.dbName: "user-activity"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+type: Opaque
+data:
+  mongodb.uri: "bW9uZ29kYjovL21vbmdvZGI6MjcwMTcvdXNlci1hY3Rpdml0eQ==" # base64 encoded mongodb://mongodb:27017/user-activity 

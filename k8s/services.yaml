@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-activity-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-activity-service
+  template:
+    metadata:
+      labels:
+        app: user-activity-service
+    spec:
+      containers:
+        - name: user-activity-service
+          image: farahnabil/user-activity-service:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: KAFKA_BROKERS
+              value: "kafka:9092"
+            - name: MONGODB_URI
+              value: "mongodb://mongodb:27017/userActivity"
+            - name: KAFKA_SECURITY_PROTOCOL
+              value: "SASL_SSL"
+            - name: KAFKA_SASL_MECHANISM
+              value: "PLAIN"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-activity-service
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30000
+  selector:
+    app: user-activity-service 
